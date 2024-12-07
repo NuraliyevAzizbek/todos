@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo Update</title>
+</head>
+
+<body>
+    <h1>
+        Update:
+    </h1>
+
+
+    <form action="{% url 'todo' %}" method="post">
+        {% csrf_token %}
+
+        <input type="text" value={{todo.title}} name="title" id="todo" placeholder="Enter your todo">
+        <input type="text" value={{todo.description}} name="description" id="description" placeholder="Enter your description">
+        <input type="date" value={{todo.deadline}} name="deadline" id="date" placeholder="Enter your date">
+
+        <button type="submit">Update</button>
+
+    </form>
+
+
+</body>
+
+</html>

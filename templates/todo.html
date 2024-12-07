@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo</title>
+</head>
+
+<body>
+    <h1>
+        My ToDos:
+    </h1>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <br>
+    <form method="get">
+    <div class="input-group w-100">
+        <div class="input-group-append">
+            <select name="done_filter" class="form-control" required>
+                <option value="{{done_filter}}" selected disabled hidden>Choose here</option>
+                <option value="isdone">isdone</option>
+                <option value="isnotdone">isnotdone</option>
+            </select>
+            <button class="btn btn-primary" type="submit">
+                filter
+            </button>
+            <br>
+        </div>
+    </div>
+    </form>
+
+
+    <form action="{% url 'todo' %}" method="post">
+        {% csrf_token %}
+
+        <input type="text" name="title" id="todo" placeholder="Enter your todo">
+        <input type="text" name="description" id="description" placeholder="Enter your description">
+        <input type="date" name="deadline" id="date" placeholder="Enter your date">
+
+        <button type="submit">Add</button>
+
+    </form>
+    {% for todo in todos %}
+    <ul>
+        <li>
+        {% if todo.is_done == False %}
+            {{ todo.title }} - {{ todo.description }} - {{ todo.deadline }}
+        {% else %}
+            <s>{{ todo.title }} - {{ todo.description }} - {{ todo.deadline }}</s>
+        {% endif %}
+        <form action="{% url 'update' todo.id %}" method="get" style="display:inline;">
+            <!-- TODO send id from hiddein input -->
+            <button type="submit">Update</button>
+        </form>
+        
+        <form action="{% url 'delete' todo.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+        </form>
+        
+        <form action="{% url 'isdone' todo.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Is_Done</button>
+        </form>
+        </li>
+    </ul>
+    {% endfor %}
+    
+
+</body>
+
+</html>
+
+<script>
+    function changeDone() {
+        
+    }
+
+</script>
