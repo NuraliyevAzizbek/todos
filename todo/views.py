@@ -2,22 +2,30 @@ from django.shortcuts import render, redirect
 from django.contrib import messages 
 
 from .models import Todo
+from .forms import FilterTodoForm,AddTodoForm,UpdateTodoForm
 
 
 # Create your views here.
 def todo(request):
-    done_filter = request.GET.get("done_filter", "")
-    if request.method == "POST":
-        title = request.POST.get("title")
-        description = request.POST.get("description")
-        deadline = request.POST.get("deadline")
-        Todo.objects.create(title=title, description=description, deadline=deadline)
     todos = Todo.objects.all()
-    if done_filter == "isdone":
-        todos = todos.filter(is_done = True)
-    elif done_filter == "isnotdone":
-        todos = todos.filter(is_done = False)
-    context = {"todos": todos}
+    form = FilterTodoForm()
+    if request.method == "GET":
+        form = FilterTodoForm(data=request.GET)
+        if form.is_valid():
+            todos = form.save()
+
+
+    add_form = AddTodoForm()
+    if request.method == "POST":
+        add_form = AddTodoForm(data=request.POST)
+        if add_form.is_valid():
+            add_form.save()
+            
+    context = {
+        "todos": todos,
+        "form":form,
+        "add_form":add_form,
+        }
     return render(request, "todo.html", context)
 
 
@@ -34,21 +42,20 @@ def todo_delete(request, pk):
 
 def todo_update(request, pk):
     try:
-        todo = Todo.objects.get(id = pk)
+        update_form = UpdateTodoForm()
         if request.method == "POST":
-            title = request.POST.get("title")
-            description = request.POST.get("description")
-            deadline = request.POST.get("deadline")
-            #update
-            todo.title=title
-            todo.description=description
-            todo.deadline=deadline
-            todo.save()
+            update_form = UpdateTodoForm(data=request.POST)
+            if update_form.is_valid():
+                update_form.save(pk)
+                
     except Exception as e:
         messages.error(request, f"Xato: {e}")
         return redirect("todo")
 
-    context = {'todo':todo}
+    context = {
+        'todo':todo,
+        'update_form':update_form,
+        }
 
     return render(request, 'update.html', context)
 
